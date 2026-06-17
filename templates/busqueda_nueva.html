@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<section class="contenedor">
+
+    <h1>Nueva búsqueda laboral</h1>
+
+    <form id="formNuevaBusqueda">
+
+        <label>Título</label>
+        <input
+            type="text"
+            id="tituloPuesto"
+            required
+        >
+
+        <label>Descripción</label>
+        <textarea
+            id="descripcion"
+        ></textarea>
+
+        <label>Salario mínimo</label>
+        <input
+            type="number"
+            id="salarioMinimo"
+        >
+
+        <label>Salario máximo</label>
+        <input
+            type="number"
+            id="salarioMaximo"
+        >
+
+        <label>Experiencia mínima</label>
+        <input
+            type="number"
+            id="expMinima"
+            required
+        >
+
+        <label>Skills</label>
+        <input
+            type="text"
+            id="skills"
+        >
+
+        <button type="submit">
+            Guardar búsqueda
+        </button>
+
+    </form>
+
+</section>
+
+<script>
+
+document
+.getElementById("formNuevaBusqueda")
+.addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const datosBusqueda = {
+
+        titulo:
+            document
+            .getElementById("tituloPuesto")
+            .value,
+
+        descripcion:
+            document
+            .getElementById("descripcion")
+            .value,
+
+        salario_min:
+            parseFloat(
+                document
+                .getElementById("salarioMinimo")
+                .value || 0
+            ),
+
+        salario_max:
+            parseFloat(
+                document
+                .getElementById("salarioMaximo")
+                .value || 0
+            ),
+
+        exp_min:
+            parseInt(
+                document
+                .getElementById("expMinima")
+                .value
+            ),
+
+        skills:
+            document
+            .getElementById("skills")
+            .value
+            .split(",")
+            .map(s => s.trim())
+            .filter(s => s !== "")
+
+    };
+
+    const response =
+        await fetch("/api/busquedas", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(datosBusqueda)
+
+        });
+
+    const resultado =
+        await response.json();
+
+    if(response.ok){
+
+        alert(resultado.mensaje);
+
+        window.location.href =
+            "/busquedas";
+
+    } else {
+
+        alert(resultado.error);
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+<section class="contenedor">
+
+    <div class="encabezado_pagina">
+
+        <h1>Búsquedas Laborales</h1>
+
+        <a
+            href="/busquedas/nueva"
+            class="btn_principal"
+        >
+            Nueva búsqueda
+        </a>
+
+    </div>
+
+    <div id="contenedorBusquedas">
+
+        <p>Cargando búsquedas...</p>
+
+    </div>
+
+</section>
+
+<script>
+
+async function cargarBusquedas(){
+
+    const contenedor =
+        document.getElementById("contenedorBusquedas");
+
+    try{
+
+        const response =
+            await fetch("/api/busquedas");
+
+        const busquedas =
+            await response.json();
+
+        contenedor.innerHTML = "";
+
+        if(busquedas.length === 0){
+
+            contenedor.innerHTML = `
+                <p>
+                    No existen búsquedas cargadas.
+                </p>
+            `;
+
+            return;
+
+        }
+
+        busquedas.forEach(busqueda => {
+
+            contenedor.innerHTML += `
+
+                <div class="card_busqueda">
+
+                    <h3>
+                        ${busqueda.titulo}
+                    </h3>
+
+                    <p>
+                        ${busqueda.descripcion}
+                    </p>
+
+                    <p>
+                        Experiencia mínima:
+                        ${busqueda.exp_min} años
+                    </p>
+
+                    <p>
+                        Salario:
+                        $${busqueda.salario_min}
+                        -
+                        $${busqueda.salario_max}
+                    </p>
+
+                </div>
+
+            `;
+
+        });
+
+    }
+
+    catch(error){
+
+        contenedor.innerHTML =
+            "<p>Error al cargar búsquedas.</p>";
+
+    }
+
+}
+
+cargarBusquedas();
+
+</script>
+
+{% endblock %}

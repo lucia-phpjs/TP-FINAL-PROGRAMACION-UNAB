@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Turnos de Entrevistas Laborales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: flex;
+            height: calc(100vh - 250px);
+        }
+
+        .menu-sidebar {
+            width: 250px;
+            background: #f8f9fa;
+            border-right: 2px solid #e9ecef;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .menu-item:hover {
+            background: #e9ecef;
+            border-left-color: #667eea;
+            color: #667eea;
+        }
+
+        .menu-item.active {
+            background: #e7f3ff;
+            border-left-color: #667eea;
+            color: #667eea;
+        }
+
+        .content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 10px;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left-color: #28a745;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left-color: #dc3545;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left-color: #17a2b8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .field-info {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #495057;
+        }
+
+        .demo-btn {
+            background: #28a745;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Turnos de Entrevistas Laborales</h1>
+            <p>Gestión completa de candidatos, búsquedas, evaluaciones y turnos de entrevista</p>
+        </header>
+
+        <div class="main-content">
+            <!-- SIDEBAR MENU -->
+            <div class="menu-sidebar">
+                <div class="menu-item active" onclick="showSection('dashboard')"> Dashboard</div>
+                <div class="menu-item" onclick="showSection('candidatos')"> Candidatos</div>
+                <div class="menu-item" onclick="showSection('busquedas')"> Búsquedas</div>
+                <div class="menu-item" onclick="showSection('evaluaciones')"> Evaluaciones</div>
+                <div class="menu-item" onclick="showSection('turnos')">Turnos</div>
+                <div class="menu-item" onclick="showSection('reportes')">Reportes</div>
+                <div class="menu-item demo-btn" onclick="cargarDemo()"> Cargar Demo</div>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <!-- DASHBOARD -->
+                <div id="dashboard" class="section active">
+                    <h2>Dashboard</h2>
+                    <div class="stats" id="stats"></div>
+                    <h3 style="margin-top: 30px; color: #667eea;">Próximos Turnos</h3>
+                    <div id="proximosTurnos"></div>
+                </div>
+
+                <!-- CANDIDATOS -->
+                <div id="candidatos" class="section">
+                    <h2>Gestión de Candidatos</h2>
+                    <div id="alertaCandidato"></div>
+
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 20px; color: #667eea;">Registrar Nuevo Candidato</h3>
+                        <form onsubmit="registrarCandidato(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Nombre Completo *</label>
+                                    <input type="text" id="nombre" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email *</label>
+                                    <input type="email" id="email" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Teléfono *</label>
+                                    <input type="tel" id="telefono" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Años de Experiencia *</label>
+                                    <input type="number" id="anos" min="0" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>CV / Descripción Profesional *</label>
+                                <textarea id="cv" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Habilidades (separadas por coma)</label>
+                                <input type="text" id="habilidades" placeholder="Python, JavaScript, SQL, AWS">
+                            </div>
+                            <button type="submit">Registrar Candidato</button>
+                        </form>
+                    </div>
+
+                    <h3 style="margin-top: 30px; margin-bottom: 20px; color: #667eea;">Lista de Candidatos</h3>
+                    <div class="table-responsive">
+                        <table id="tablaCandidatos"></table>
+                    </div>
+                </div>
+
+                <!-- BÚSQUEDAS -->
+                <div id="busquedas" class="section">
+                    <h2>🔍 Gestión de Búsquedas</h2>
+                    <div id="alertaBusqueda"></div>
+
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 20px; color: #667eea;">Crear Nueva Búsqueda</h3>
+                        <form onsubmit="crearBusqueda(event)">
+                            <div class="form-group">
+                                <label>Título del Puesto *</label>
+                                <input type="text" id="tituloPuesto" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Descripción *</label>
+                                <textarea id="descripcionBusqueda" rows="3" required></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Salario Mínimo ($) *</label>
+                                    <input type="number" id="salarioMin" min="0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Salario Máximo ($) *</label>
+                                    <input type="number" id="salarioMax" min="0" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Skills Requeridos (separados por coma) *</label>
+                                <input type="text" id="skillsRequeridos" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Experiencia Mínima (años) *</label>
+                                <input type="number" id="experienciaMin" min="0" required>
+                            </div>
+                            <button type="submit">Crear Búsqueda</button>
+                        </form>
+                    </div>
+
+                    <h3 style="margin-top: 30px; margin-bottom: 20px; color: #667eea;">Lista de Búsquedas</h3>
+                    <div class="table-responsive">
+                        <table id="tablaBusquedas"></table>
+                    </div>
+                </div>
+
+                <!-- EVALUACIONES -->
+                <div id="evaluaciones" class="section">
+                    <h2>📋 Evaluaciones de Candidatos</h2>
+                    <div id="alertaEvaluacion"></div>
+
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 20px; color: #667eea;">Crear Nueva Evaluación</h3>
+                        <form onsubmit="crearEvaluacion(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Candidato *</label>
+                                    <select id="candidatoEval" required>
+                                        <option value="">Selecciona un candidato...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Búsqueda *</label>
+                                    <select id="busquedaEval" required>
+                                        <option value="">Selecciona una búsqueda...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Evaluador *</label>
+                                    <input type="text" id="evaluador" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Resultado *</label>
+                                    <select id="resultadoEval" required>
+                                        <option value="">Selecciona resultado...</option>
+                                        <option value="aprobado">Aprobado</option>
+                                        <option value="rechazado">Rechazado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Puntuación (0-100) *</label>
+                                <input type="number" id="puntuacion" min="0" max="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Comentarios</label>
+                                <textarea id="comentariosEval" rows="3"></textarea>
+                            </div>
+                            <button type="submit">Crear Evaluación</button>
+                        </form>
+                    </div>
+
+                    <h3 style="margin-top: 30px; margin-bottom: 20px; color: #667eea;">Lista de Evaluaciones</h3>
+                    <div class="table-responsive">
+                        <table id="tablaEvaluaciones"></table>
+                    </div>
+                </div>
+
+                <!-- TURNOS -->
+                <div id="turnos" class="section">
+                    <h2>Gestión de Turnos</h2>
+                    <div id="alertaTurno"></div>
+
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 20px; color: #667eea;">Agendar Nuevo Turno</h3>
+                        <form onsubmit="agendarTurno(event)">
+                            <div class="form-group">
+                                <label>Evaluación Aprobada *</label>
+                                <select id="evaluacionTurno" required>
+                                    <option value="">Selecciona evaluación aprobada...</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Fecha *</label>
+                                    <input type="date" id="fechaTurno" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Hora *</label>
+                                    <input type="time" id="horaTurno" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Entrevistador *</label>
+                                    <input type="text" id="entrevistador" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Sala *</label>
+                                    <input type="text" id="sala" placeholder="Sala A, Sala B, etc." required>
+                                </div>
+                            </div>
+                            <button type="submit">Agendar Turno</button>
+                        </form>
+                    </div>
+
+                    <h3 style="margin-top: 30px; margin-bottom: 20px; color: #667eea;">Turnos Agendados</h3>
+                    <div class="table-responsive">
+                        <table id="tablaTurnos"></table>
+                    </div>
+                </div>
+
+                <!-- REPORTES -->
+                <div id="reportes" class="section">
+                    <h2>Reportes y Estadísticas</h2>
+                    <div id="reportesContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== BASE DE DATOS EN MEMORIA =====
+        const db = {
+            candidatos: [],
+            busquedas: [],
+            evaluaciones: [],
+            turnos: []
+        };
+
+        // ===== FUNCIONES AUXILIARES =====
+        function generarId() {
+            return Date.now();
+        }
+
+        function mostrarAlerta(elementId, mensaje, tipo) {
+            const alertaDiv = document.getElementById(elementId);
+            alertaDiv.innerHTML = `<div class="alert alert-${tipo}">${mensaje}</div>`;
+            setTimeout(() => alertaDiv.innerHTML = '', 5000);
+        }
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(section).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (section === 'candidatos') actualizarTablaCandidatos();
+            if (section === 'busquedas') actualizarTablaBusquedas();
+            if (section === 'evaluaciones') actualizarTablaEvaluaciones();
+            if (section === 'turnos') actualizarTablaTurnos();
+            if (section === 'dashboard') actualizarDashboard();
+            if (section === 'reportes') actualizarReportes();
+        }
+
+        // ===== CANDIDATOS =====
+        function registrarCandidato(event) {
+            event.preventDefault();
+            
+            const nombre = document.getElementById('nombre').value;
+            const email = document.getElementById('email').value;
+            const telefono = document.getElementById('telefono').value;
+            const anos = parseInt(document.getElementById('anos').value);
+            const cv = document.getElementById('cv').value;
+            const habilidades = document.getElementById('habilidades').value.split(',').map(h => h.trim());
+
+            if (!nombre || !email || !telefono || !cv) {
+                mostrarAlerta('alertaCandidato', ' Por favor completa todos los campos', 'danger');
+                return;
+            }
+
+            const candidato = {
+                id: generarId(),
+                nombre,
+                email,
+                telefono,
+                anos,
+                cv,
+                habilidades,
+                estado: 'registrado',
+                fecha: new Date().toLocaleDateString()
+            };
+
+            db.candidatos.push(candidato);
+            mostrarAlerta('alertaCandidato', `Candidato ${nombre} registrado exitosamente`, 'success');
+            
+            event.target.reset();
+            actualizarTablaCandidatos();
+            actualizarSelectsCandidatos();
+        }
+
+        function actualizarTablaCandidatos() {
+            const tabla = document.getElementById('tablaCandidatos');
+            if (db.candidatos.length === 0) {
+                tabla.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999;">No hay candidatos registrados</td></tr>';
+                return;
+            }
+
+            let html = '<thead><tr><th>Nombre</th><th>Email</th><th>Experiencia</th><th>Habilidades</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>';
+            
+            db.candidatos.forEach(c => {
+                const estadoBadge = c.estado === 'aprobado' ? 'badge-success' : c.estado === 'rechazado' ? 'badge-danger' : 'badge-info';
+                html += `
+                    <tr>
+                        <td><strong>${c.nombre}</strong></td>
+                        <td>${c.email}</td>
+                        <td>${c.anos} años</td>
+                        <td>${c.habilidades.join(', ')}</td>
+                        <td><span class="badge ${estadoBadge}">${c.estado}</span></td>
+                        <td><button class="btn-secondary" onclick="eliminarCandidato(${c.id})">🗑️ Eliminar</button></td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody>';
+            tabla.innerHTML = html;
+        }
+
+        function eliminarCandidato(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este candidato?')) {
+                db.candidatos = db.candidatos.filter(c => c.id !== id);
+                actualizarTablaCandidatos();
+                actualizarSelectsCandidatos();
+            }
+        }
+
+        function actualizarSelectsCandidatos() {
+            const select = document.getElementById('candidatoEval');
+            select.innerHTML = '<option value="">Selecciona un candidato...</option>';
+            db.candidatos.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+            });
+        }
+
+        // ===== BÚSQUEDAS =====
+        function crearBusqueda(event) {
+            event.preventDefault();
+
+            const titulo = document.getElementById('tituloPuesto').value;
+            const descripcion = document.getElementById('descripcionBusqueda').value;
+            const salarioMin = parseFloat(document.getElementById('salarioMin').value);
+            const salarioMax = parseFloat(document.getElementById('salarioMax').value);
+            const skills = document.getElementById('skillsRequeridos').value.split(',').map(s => s.trim());
+            const experienciaMin = parseInt(document.getElementById('experienciaMin').value);
+
+            if (salarioMin > salarioMax) {
+                mostrarAlerta('alertaBusqueda', ' El salario mínimo no puede ser mayor al máximo', 'danger');
+                return;
+            }
+
+            const busqueda = {
+                id: generarId(),
+                titulo,
+                descripcion,
+                salarioMin,
+                salarioMax,
+                skills,
+                experienciaMin,
+                estado: 'abierta',
+                fecha: new Date().toLocaleDateString()
+            };
+
+            db.busquedas.push(busqueda);
+            mostrarAlerta('alertaBusqueda', ` Búsqueda "${titulo}" creada exitosamente`, 'success');
+            
+            event.target.reset();
+            actualizarTablaBusquedas();
+            actualizarSelectsBusquedas();
+        }
+
+        function actualizarTablaBusquedas() {
+            const tabla = document.getElementById('tablaBusquedas');
+            if (db.busquedas.length === 0) {
+                tabla.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #999;">No hay búsquedas registradas</td></tr>';
+                return;
+            }
+
+            let html = '<thead><tr><th>Puesto</th><th>Salario</th><th>Skills</th><th>Exp. Min</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>';
+            
+            db.busquedas.forEach(b => {
+                const estadoBadge = b.estado === 'abierta' ? 'badge-success' : 'badge-danger';
+                html += `
+                    <tr>
+                        <td><strong>${b.titulo}</strong></td>
+                        <td>$${b.salarioMin} - $${b.salarioMax}</td>
+                        <td>${b.skills.join(', ')}</td>
+                        <td>${b.experienciaMin} años</td>
+                        <td><span class="badge ${estadoBadge}">${b.estado}</span></td>
+                        <td><button class="btn-secondary" onclick="eliminarBusqueda(${b.id})">🗑️ Eliminar</button></td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody>';
+            tabla.innerHTML = html;
+        }
+
+        function eliminarBusqueda(id) {
+            if (confirm('¿Estás seguro?')) {
+                db.busquedas = db.busquedas.filter(b => b.id !== id);
+                actualizarTablaBusquedas();
+                actualizarSelectsBusquedas();
+            }
+        }
+
+        function actualizarSelectsBusquedas() {
+            const select = document.getElementById('busquedaEval');
+            select.innerHTML = '<option value="">Selecciona una búsqueda...</option>';
+            db.busquedas.forEach(b => {
+                select.innerHTML += `<option value="${b.id}">${b.titulo}</option>`;
+            });
+        }
+
+        // ===== EVALUACIONES =====
+        function crearEvaluacion(event) {
+            event.preventDefault();
+
+            const candidatoId = parseInt(document.getElementById('candidatoEval').value);
+            const busquedaId = parseInt(document.getElementById('busquedaEval').value);
+            const evaluador = document.getElementById('evaluador').value;
+            const resultado = document.getElementById('resultadoEval').value;
+            const puntuacion = parseFloat(document.getElementById('puntuacion').value);
+            const comentarios = document.getElementById('comentariosEval').value;
+
+            if (!candidatoId || !busquedaId || !evaluador || !resultado) {
+                mostrarAlerta('alertaEvaluacion', ' Por favor completa todos los campos', 'danger');
+                return;
+            }
+
+            const candidato = db.candidatos.find(c => c.id === candidatoId);
+            const busqueda = db.busquedas.find(b => b.id === busquedaId);
+
+            const evaluacion = {
+                id: generarId(),
+                candidato,
+                busqueda,
+                evaluador,
+                resultado,
+                puntuacion,
+                comentarios,
+                fecha: new Date().toLocaleDateString()
+            };
+
+            db.evaluaciones.push(evaluacion);
+            
+            // Actualizar estado del candidato
+            if (resultado === 'aprobado') {
+                candidato.estado = 'aprobado';
+            } else {
+                candidato.estado = 'rechazado';
+            }
+
+            mostrarAlerta('alertaEvaluacion', `Evaluación creada exitosamente`, 'success');
+            
+            event.target.reset();
+            actualizarTablaEvaluaciones();
+            actualizarSelectsEvaluaciones();
+            actualizarTablaCandidatos();
+        }
+
+        function actualizarTablaEvaluaciones() {
+            const tabla = document.getElementById('tablaEvaluaciones');
+            if (db.evaluaciones.length === 0) {
+                tabla.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #999;">No hay evaluaciones registradas</td></tr>';
+                return;
+            }
+
+            let html = '<thead><tr><th>Candidato</th><th>Puesto</th><th>Evaluador</th><th>Resultado</th><th>Puntuación</th><th>Comentarios</th><th>Acciones</th></tr></thead><tbody>';
+            
+            db.evaluaciones.forEach(e => {
+                const resultadoBadge = e.resultado === 'aprobado' ? 'badge-success' : 'badge-danger';
+                html += `
+                    <tr>
+                        <td><strong>${e.candidato.nombre}</strong></td>
+                        <td>${e.busqueda.titulo}</td>
+                        <td>${e.evaluador}</td>
+                        <td><span class="badge ${resultadoBadge}">${e.resultado}</span></td>
+                        <td>${e.puntuacion}/100</td>
+                        <td>${e.comentarios || '-'}</td>
+                        <td><button class="btn-secondary" onclick="eliminarEvaluacion(${e.id})">🗑️ Eliminar</button></td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody>';
+            tabla.innerHTML = html;
+        }
+
+        function eliminarEvaluacion(id) {
+            if (confirm('¿Estás seguro?')) {
+                db.evaluaciones = db.evaluaciones.filter(e => e.id !== id);
+                actualizarTablaEvaluaciones();
+                actualizarSelectsEvaluaciones();
+            }
+        }
+
+        function actualizarSelectsEvaluaciones() {
+            const select = document.getElementById('evaluacionTurno');
+            select.innerHTML = '<option value="">Selecciona evaluación aprobada...</option>';
+            db.evaluaciones.filter(e => e.resultado === 'aprobado').forEach(e => {
+                select.innerHTML += `<option value="${e.id}">${e.candidato.nombre} - ${e.busqueda.titulo}</option>`;
+            });
+        }
+
+        // ===== TURNOS =====
+        function agendarTurno(event) {
+            event.preventDefault();
+
+            const evaluacionId = parseInt(document.getElementById('evaluacionTurno').value);
+            const fecha = document.getElementById('fechaTurno').value;
+            const hora = document.getElementById('horaTurno').value;
+            const entrevistador = document.getElementById('entrevistador').value;
+            const sala = document.getElementById('sala').value;
+
+            if (!evaluacionId || !fecha || !hora || !entrevistador || !sala) {
+                mostrarAlerta('alertaTurno', ' Por favor completa todos los campos', 'danger');
+                return;
+            }
+
+            const evaluacion = db.evaluaciones.find(e => e.id === evaluacionId);
+            
+            const turno = {
+                id: generarId(),
+                evaluacion,
+                fecha,
+                hora,
+                entrevistador,
+                sala,
+                estado: 'agendado',
+                observaciones: ''
+            };
+
+            db.turnos.push(turno);
+            mostrarAlerta('alertaTurno', ` Turno agendado exitosamente para ${fecha} a las ${hora}`, 'success');
+            
+            event.target.reset();
+            actualizarTablaTurnos();
+        }
+
+        function actualizarTablaTurnos() {
+            const tabla = document.getElementById('tablaTurnos');
+            if (db.turnos.length === 0) {
+                tabla.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999;">No hay turnos agendados</td></tr>';
+                return;
+            }
+
+            let html = '<thead><tr><th>Candidato</th><th>Puesto</th><th>Fecha</th><th>Hora</th><th>Entrevistador</th><th>Sala</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>';
+            
+            db.turnos.forEach(t => {
+                const estadoBadge = t.estado === 'agendado' ? 'badge-info' : t.estado === 'completado' ? 'badge-success' : 'badge-danger';
+                html += `
+                    <tr>
+                        <td><strong>${t.evaluacion.candidato.nombre}</strong></td>
+                        <td>${t.evaluacion.busqueda.titulo}</td>
+                        <td>${t.fecha}</td>
+                        <td>${t.hora}</td>
+                        <td>${t.entrevistador}</td>
+                        <td>${t.sala}</td>
+                        <td><span class="badge ${estadoBadge}">${t.estado}</span></td>
+                        <td>
+                            <button class="btn-success" onclick="completarTurno(${t.id})">✅ Completar</button>
+                            <button class="btn-danger" onclick="cancelarTurno(${t.id})">❌ Cancelar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody>';
+            tabla.innerHTML = html;
+        }
+
+        function completarTurno(id) {
+            const turno = db.turnos.find(t => t.id === id);
+            turno.estado = 'completado';
+            actualizarTablaTurnos();
+        }
+
+        function cancelarTurno(id) {
+            const turno = db.turnos.find(t => t.id === id);
+            turno.estado = 'cancelado';
+            actualizarTablaTurnos();
+        }
+
+        // ===== DASHBOARD =====
+        function actualizarDashboard() {
+            const stats = document.getElementById('stats');
+            const totalCandidatos = db.candidatos.length;
+            const candidatosAprobados = db.candidatos.filter(c => c.estado === 'aprobado').length;
+            const evaluacionesPendientes = db.evaluaciones.filter(e => e.resultado === 'pendiente').length;
+            const turnosAgendados = db.turnos.filter(t => t.estado === 'agendado').length;
+
+            stats.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">Total Candidatos</div>
+                    <div class="stat-number">${totalCandidatos}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Candidatos Aprobados</div>
+                    <div class="stat-number">${candidatosAprobados}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Búsquedas Activas</div>
+                    <div class="stat-number">${db.busquedas.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Turnos Agendados</div>
+                    <div class="stat-number">${turnosAgendados}</div>
+                </div>
+            `;
+
+            const proximosTurnos = document.getElementById('proximosTurnos');
+            if (db.turnos.length === 0) {
+                proximosTurnos.innerHTML = '<p style="color: #999;">No hay turnos agendados</p>';
+            } else {
+                let html = '<table><thead><tr><th>Candidato</th><th>Fecha</th><th>Hora</th><th>Sala</th><th>Estado</th></tr></thead><tbody>';
+                db.turnos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)).slice(0, 5).forEach(t => {
+                    const estadoBadge = t.estado === 'agendado' ? 'badge-info' : t.estado === 'completado' ? 'badge-success' : 'badge-danger';
+                    html += `
+                        <tr>
+                            <td>${t.evaluacion.candidato.nombre}</td>
+                            <td>${t.fecha}</td>
+                            <td>${t.hora}</td>
+                            <td>${t.sala}</td>
+                            <td><span class="badge ${estadoBadge}">${t.estado}</span></td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table>';
+                proximosTurnos.innerHTML = html;
+            }
+        }
+
+        // ===== REPORTES =====
+        function actualizarReportes() {
+            const content = document.getElementById('reportesContent');
+            
+            const totalCandidatos = db.candidatos.length;
+            const aprobados = db.candidatos.filter(c => c.estado === 'aprobado').length;
+            const rechazados = db.candidatos.filter(c => c.estado === 'rechazado').length;
+            const evaluacionesTotal = db.evaluaciones.length;
+            const evaluacionesAprobadas = db.evaluaciones.filter(e => e.resultado === 'aprobado').length;
+            const tasaAprobacion = evaluacionesTotal > 0 ? ((evaluacionesAprobadas / evaluacionesTotal) * 100).toFixed(2) : 0;
+
+            content.innerHTML = `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;"> Estadísticas de Candidatos</h3>
+                    <p><strong>Total de candidatos:</strong> ${totalCandidatos}</p>
+                    <p><strong>Candidatos aprobados:</strong> ${aprobados}</p>
+                    <p><strong>Candidatos rechazados:</strong> ${rechazados}</p>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;"> Estadísticas de Evaluaciones</h3>
+                    <p><strong>Total de evaluaciones:</strong> ${evaluacionesTotal}</p>
+                    <p><strong>Evaluaciones aprobadas:</strong> ${evaluacionesAprobadas}</p>
+                    <p><strong>Tasa de aprobación:</strong> ${tasaAprobacion}%</p>
+                </div>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;"> Estadísticas de Turnos</h3>
+                    <p><strong>Total de turnos:</strong> ${db.turnos.length}</p>
+                    <p><strong>Turnos agendados:</strong> ${db.turnos.filter(t => t.estado === 'agendado').length}</p>
+                    <p><strong>Turnos completados:</strong> ${db.turnos.filter(t => t.estado === 'completado').length}</p>
+                    <p><strong>Turnos cancelados:</strong> ${db.turnos.filter(t => t.estado === 'cancelado').length}</p>
+                </div>
+            `;
+        }
+
+        // ===== CARGAR DEMO =====
+        function cargarDemo() {
+            // Limpiar base de datos
+            db.candidatos = [];
+            db.busquedas = [];
+            db.evaluaciones = [];
+            db.turnos = [];
+
+            // Crear candidatos de demo
+            db.candidatos.push({
+                id: generarId(),
+                nombre: 'Alice Johnson',
+                email: 'alice@example.com',
+                telefono: '1234567890',
+                anos: 6,
+                cv: 'Senior Developer con 6 años de experiencia',
+                habilidades: ['Python', 'JavaScript', 'SQL', 'AWS'],
+                estado: 'registrado',
+                fecha: new Date().toLocaleDateString()
+            });
+
+            db.candidatos.push({
+                id: generarId(),
+                nombre: 'Bob Smith',
+                email: 'bob@example.com',
+                telefono: '0987654321',
+                anos: 3,
+                cv: 'Full Stack Developer',
+                habilidades: ['Python', 'React', 'PostgreSQL'],
+                estado: 'registrado',
+                fecha: new Date().toLocaleDateString()
+            });
+
+            db.candidatos.push({
+                id: generarId(),
+                nombre: 'Carol White',
+                email: 'carol@example.com',
+                telefono: '5555555555',
+                anos: 8,
+                cv: 'Technical Lead',
+                habilidades: ['Python', 'JavaScript', 'AWS', 'Docker', 'Kubernetes'],
+                estado: 'registrado',
+                fecha: new Date().toLocaleDateString()
+            });
+
+            // Crear búsquedas de demo
+            db.busquedas.push({
+                id: generarId(),
+                titulo: 'Senior Python Developer',
+                descripcion: 'Buscamos desarrollador senior con experiencia en cloud',
+                salarioMin: 100000,
+                salarioMax: 150000,
+                skills: ['Python', 'AWS', 'SQL'],
+                experienciaMin: 5,
+                estado: 'abierta',
+                fecha: new Date().toLocaleDateString()
+            });
+
+            db.busquedas.push({
+                id: generarId(),
+                titulo: 'Full Stack Developer',
+                descripcion: 'Desarrollador full stack junior-mid',
+                salarioMin: 40000,
+                salarioMax: 70000,
+                skills: ['Python', 'React', 'PostgreSQL'],
+                experienciaMin: 2,
+                estado: 'abierta',
+                fecha: new Date().toLocaleDateString()
+            });
+
+            // Crear evaluaciones
+            const eval1 = {
+                id: generarId(),
+                candidato: db.candidatos[0],
+                busqueda: db.busquedas[0],
+                evaluador: 'Juan Manager',
+                resultado: 'aprobado',
+                puntuacion: 95,
+                comentarios: 'Excelente perfil',
+                fecha: new Date().toLocaleDateString()
+            };
+            db.evaluaciones.push(eval1);
+            db.candidatos[0].estado = 'aprobado';
+
+            const eval2 = {
+                id: generarId(),
+                candidato: db.candidatos[1],
+                busqueda: db.busquedas[1],
+                evaluador: 'Juan Manager',
+                resultado: 'aprobado',
+                puntuacion: 88,
+                comentarios: 'Buen candidato',
+                fecha: new Date().toLocaleDateString()
+            };
+            db.evaluaciones.push(eval2);
+            db.candidatos[1].estado = 'aprobado';
+
+            // Crear turnos
+            const hoy = new Date();
+            const mañana = new Date(hoy.getTime() + 2 * 24 * 60 * 60 * 1000);
+            const fechaMañana = mañana.toISOString().split('T')[0];
+
+            db.turnos.push({
+                id: generarId(),
+                evaluacion: eval1,
+                fecha: fechaMañana,
+                hora: '09:30',
+                entrevistador: 'Luis Recruiter',
+                sala: 'Sala A',
+                estado: 'agendado',
+                observaciones: ''
+            });
+
+            db.turnos.push({
+                id: generarId(),
+                evaluacion: eval2,
+                fecha: fechaMañana,
+                hora: '10:00',
+                entrevistador: 'Luis Recruiter',
+                sala: 'Sala B',
+                estado: 'agendado',
+                observaciones: ''
+            });
+
+            mostrarAlerta('alertaCandidato', 'Demo cargada exitosamente con 3 candidatos, 2 búsquedas, 2 evaluaciones y 2 turnos', 'success');
+            
+            actualizarTablaCandidatos();
+            actualizarTablaBusquedas();
+            actualizarTablaEvaluaciones();
+            actualizarTablaTurnos();
+            actualizarSelectsCandidatos();
+            actualizarSelectsBusquedas();
+            actualizarSelectsEvaluaciones();
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            actualizarTablaCandidatos();
+            actualizarTablaBusquedas();
+            actualizarTablaEvaluaciones();
+            actualizarTablaTurnos();
+            actualizarSelectsCandidatos();
+            actualizarSelectsBusquedas();
+            actualizarSelectsEvaluaciones();
+        });
+    </script>
+</body>
+</html>
