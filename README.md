@@ -1,7 +1,5 @@
 # TP-FINAL-PROGRAMACION-UNAB
-Proyecto académico desarrollado en Python para la gestión de procesos de selección de personal. 
 
-# TP Final Programación
 # Sistema de Gestión de Entrevistas Laborales
 
 ## Descripción
